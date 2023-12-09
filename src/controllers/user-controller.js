@@ -1,6 +1,5 @@
 const UserService = require("../services/user-service");
 
-
 const userService = new UserService();
 
 const createUser = async (req, res) => {
@@ -25,7 +24,7 @@ const createUser = async (req, res) => {
 const getUser = async (req, res) => {
     try {
         console.log(req.query);
-        const response = await userService.get(req.query.id);
+        const response = await userService.get(req.params.id);
         return res.status(200).json({
             data : response, 
             success : true,
@@ -39,7 +38,7 @@ const getUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
     try {
-        await userService.delete(req.query.id);
+        await userService.delete(req.params.id);
         return res.status(204).json({ 
             success : true,
             message : 'Successfully deleted ',
