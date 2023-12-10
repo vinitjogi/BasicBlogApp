@@ -4,12 +4,8 @@ const userService = new UserService();
 
 const createUser = async (req, res) => {
     try {
-        const response = await userService.create({
-            email : req.body.email,
-            password : req.body.password,
-            username : req.body.username
-
-        });
+       const {email, password, username} = req.body
+        const response = await userService.create({email, password, username});
         return res.status(201).json({
             data : response, 
             success : true,
@@ -23,8 +19,8 @@ const createUser = async (req, res) => {
 
 const getUser = async (req, res) => {
     try {
-        console.log(req.query);
-        const response = await userService.get(req.params.id);
+        const id = req.params.id;
+        const response = await userService.get(id);
         return res.status(200).json({
             data : response, 
             success : true,
@@ -38,7 +34,8 @@ const getUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
     try {
-        await userService.delete(req.params.id);
+        const id = req.params.id;
+        await userService.delete(id);
         return res.status(204).json({ 
             success : true,
             message : 'Successfully deleted ',
@@ -49,7 +46,26 @@ const deleteUser = async (req, res) => {
     }
 }
 
+const signin = async (req, res) => {
+    try {
+       const {email, password} = req.body
+        const response = await userService.signin({email, password});
+        return res.status(200).json({
+            data : response, 
+            success : true,
+            message : 'Successfully logged in',
+            err : {}
+        });
+    } catch (error) {
+        return res.status(401).json({
+            success: false,
+            message: 'incorrect credentials',
+            err: error
+        });
+    }
+}
+
 
 module.exports = {
-    createUser, getUser, deleteUser
+    createUser, getUser, deleteUser, signin
 }

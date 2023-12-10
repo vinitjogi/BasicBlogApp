@@ -1,5 +1,5 @@
 const UserRepository = require("../repository/user-repository")
-
+const bcrypt = require('bcrypt');
 
 class UserService {
     
@@ -13,25 +13,17 @@ class UserService {
             return user;
         } catch (error) {
             console.log('something went wrong in user service ');
+            console.log(error);
             throw error;
         }
     }
     async get (id){
         try {
             const user = await this.userRepository.get(id);
-            console.log(user);
             return user;
         } catch (error) {
             console.log('something went wrong in user service ');
-            throw error;
-        }
-    }
-    async getUserByEmail(email){
-        try {
-            const user = await this.userRepository.getUserByEmail(email);
-            return user;
-        } catch (error) {
-            console.log('something went wrong in user service ');
+            console.log(error);
             throw error;
         }
     }
@@ -41,6 +33,7 @@ class UserService {
             return user;
         } catch (error) {
             console.log('something went wrong in user service ');
+            console.log(error);
             throw error;
         }
     }
@@ -51,9 +44,38 @@ class UserService {
             return true;
         } catch (error) {
             console.log('something went wrong in user service ');
+            console.log(error);
+            throw error;
+        }
+    }
+
+    async signin(data){
+        try {
+            const user = await this.userRepository.findUserByEmail(data.email);
+            if(!user){
+                throw{error : 'no user found'};
+            }
+
+            const matchPassword = this.checkPassword(data.password, user.password);
+            
+            if(!matchPassword){
+                throw{error : 'incorrect password'};
+            }
+            return user;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
+    checkPassword(plainPassword, encryptedPassword){
+        try {
+            const response = bcrypt.compareSync(plainPassword, encryptedPassword);
+            return response;
+        } catch (error) {
+            console.log(error);
             throw error;
         }
     }
 }
-
-module.exports = UserService
+module.exports = UserService;

@@ -19,9 +19,9 @@ const userSchema = new mongoose.Schema({
     }
 }, {timestamps : true});
 
-userSchema.pre('save', async function encryptPassword(next) {
+userSchema.pre('save', function encryptPassword(next) {
     // const user = this;
-    const hashedPassword = await bcrypt.hashSync(this.password, SALT);
+    const hashedPassword = bcrypt.hashSync(this.password, SALT);
     this.password = hashedPassword;
     next();
 });
