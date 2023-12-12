@@ -10,7 +10,16 @@ class UserService {
     async create(userData){
         try {
             const user = await this.userRepository.create(userData);
+
+            // check if username is already taken!
+            const existingUser = await this.userRepository.findUserBy({username : userData.username});
+            if(existingUser){
+                throw{
+                    message : 'username already exist'
+                }
+            }
             return user;
+
         } catch (error) {
             console.log('something went wrong in user service ');
             console.log(error);
@@ -51,7 +60,7 @@ class UserService {
 
     async signin(data){
         try {
-            const user = await this.userRepository.findUserByEmail(data.email);
+            const user = await this.userRepository.findUserBy({email : data.email});
             if(!user){
                 throw{error : 'no user found'};
             }
