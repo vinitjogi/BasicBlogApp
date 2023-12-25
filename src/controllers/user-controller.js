@@ -68,7 +68,21 @@ const signin = async (req, res) => {
     }
 }
 
-
+const testcode = async (req, res) => {
+    // console.log('req is', req.user);
+    try {
+        return res.json({ 
+            message: 'Protected route accessed', 
+            data : req.user
+        });
+    } catch (error) {
+        return res.status(401).json({
+            success: false,
+            message: 'unauthorised access, login first',
+            err: error
+        });
+    }
+}
 module.exports = {
-    createUser, getUser, deleteUser, signin
+    createUser, getUser, deleteUser, signin, testcode
 }

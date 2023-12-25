@@ -1,6 +1,7 @@
 const UserRepository = require("../repository/user-repository")
 const bcrypt = require('bcrypt');
-
+const jwt = require('jsonwebtoken')
+const { JWT_SECRET_KEY } = require('../config/serverConfig');
 class UserService {
     
     constructor(){
@@ -70,7 +71,13 @@ class UserService {
             if(!matchPassword){
                 throw{error : 'incorrect password'};
             }
-            return user;
+
+            const newJwt = this.createJwtToken({
+                id : user._id, 
+                username : user.username, 
+                // email : user.email
+            });
+            return newJwt;
         } catch (error) {
             console.log(error);
             throw error;
@@ -84,6 +91,30 @@ class UserService {
         } catch (error) {
             console.log(error);
             throw error;
+        }
+    }
+
+    createJwtToken(user){
+        try {
+            console.log(user);
+            const response = jwt.sign(user, JWT_SECRET_KEY, { expiresIn: '1h' });
+            return response;   
+        } catch (error) {
+            console.log('something went wrong in token creation', error);
+            throw error;
+        }
+    }
+
+    verifyJwtToken(token){
+        try {
+            const decoded = jwt.verify(token, JWT_SECRET_KEY);
+            console.log(decoded);
+        } catch (error) {
+            if(error.name === "JsonWebTokenError" && error.message === "jwt malformed"){
+                throw {
+                    error : "token is not valid"
+                }
+            }
         }
     }
 }
